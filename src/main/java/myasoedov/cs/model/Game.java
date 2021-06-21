@@ -34,9 +34,9 @@ public class Game {
     public UI getUserInterface() {
         return userInterface;
     }
-    //TODO try-catch
+
     public void play() {
-        int notCurrentPlayer;
+        int notCurrentPosition;
         Card attackCard;
         Card defensiveCard;
         int penaltyScore;
@@ -46,30 +46,15 @@ public class Game {
         do {
             if (currentPosition == players.size())
                 currentPosition = 0;
-            notCurrentPlayer = (currentPosition + 1) % 2;
+            notCurrentPosition = (currentPosition + 1) % 2;
             attackPlayer = players.get(currentPosition);
-            defensivePlayer = players.get(notCurrentPlayer);
+            defensivePlayer = players.get(notCurrentPosition);
             userInterface.showRoles(players, currentPosition);
             userInterface.showSelection(players.get(userPosition));
 
-            do {
-                try {
-                    attackCard = attackPlayer.makeMove(currentPosition);
-                } catch (RuntimeException e) {
-                    userInterface.showMessage(e.getMessage());
-                    attackCard = null;
-                }
-            } while (attackCard == null);
+            attackCard = makeMove(attackPlayer, currentPosition);
+            defensiveCard = makeMove(defensivePlayer, currentPosition);
 
-            do {
-                try {
-                    attackCard = attackPlayer.makeMove(currentPosition);
-                } catch (RuntimeException e) {
-                    userInterface.showMessage(e.getMessage());
-                    attackCard = null;
-                }
-            } while (attackCard == null);
-            defensiveCard = defensivePlayer.makeMove(notCurrentPlayer);
             penaltyScore = defensiveCard.compareForDefense(attackCard);
             defensivePlayer.addPenaltyPoints(penaltyScore);
             defensivePlayer.updateOpponentsDrop(attackCard);
@@ -89,6 +74,17 @@ public class Game {
                 return false;
         }
         return true;
+    }
+
+    private Card makeMove(Player player, int position) {
+        Card card;
+        try {
+            card = player.makeMove(position);
+        } catch (RuntimeException e) {
+            userInterface.showMessage(e.getMessage());
+            return makeMove(player, position);
+        }
+        return card;
     }
 
     private List<Player> sortByMinPoints() {

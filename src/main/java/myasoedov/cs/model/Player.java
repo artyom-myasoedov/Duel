@@ -36,7 +36,7 @@ public abstract class Player {
 
     public Card makeMove(int currentPosition) {
         int cardValue = chooseCardToMove(currentPosition);
-        Card temp = getCards().get(cardValue);
+        var temp = getCards().get(cardValue);
         getCards().remove(cardValue);
         return temp;
     }

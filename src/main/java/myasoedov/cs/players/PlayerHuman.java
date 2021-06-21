@@ -22,6 +22,13 @@ public class PlayerHuman extends Player {
 
     @Override
     public int chooseCardToMove(int currentPosition) {
-        return moveChooser.chooseCard(getPosition() == currentPosition);
+        int value = moveChooser.chooseCard(getPosition() == currentPosition);
+        if (!checkToCorrectCard(value))
+            throw new IllegalArgumentException("Invalid card, try again:");
+        return value;
+    }
+
+    private boolean checkToCorrectCard(int value) {
+        return getCards().containsKey(value);
     }
 }
